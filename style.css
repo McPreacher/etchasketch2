@@ -1,0 +1,47 @@
+#container {
+    background-color: #333;
+    height: 576px;
+    width: 576px;
+    margin: auto;
+    border: 15px solid firebrick; /* Thick red frame */
+    border-radius: 15px;
+    display: grid; 
+    overflow: hidden; /* Keeps squares in place during shake */
+}
+
+.grid {
+    background-color: dimgray;
+    border: 0.1px solid rgba(255, 255, 255, 0.05); 
+}
+
+/* Button Styling */
+input {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: white;
+    transition: background 0.3s;
+}
+
+input:hover {
+    background-color: #f0f0f0;
+}
+
+input.active {
+    background-color: firebrick;
+    color: white;
+}
+
+/* Shake Animation */
+@keyframes intense-shake {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(8px, 8px); }
+    50% { transform: translate(-8px, -8px); }
+    75% { transform: translate(8px, -8px); }
+    100% { transform: translate(0, 0); }
+}
+
+.shake-it {
+    animation: intense-shake 0.15s ease-in-out 3;
+}
