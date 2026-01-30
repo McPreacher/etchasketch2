@@ -6,7 +6,12 @@
     border: 15px solid firebrick; /* Thick red frame */
     border-radius: 15px;
     display: grid; 
-    overflow: hidden; /* Keeps squares in place during shake */
+    overflow: hidden;
+    
+    /* MOBILE FIXES */
+    touch-action: none;        /* Prevents page scrolling while drawing */
+    -webkit-user-select: none; /* Prevents text highlighting while drawing */
+    user-select: none;
 }
 
 .grid {
@@ -44,4 +49,17 @@ input.active {
 
 .shake-it {
     animation: intense-shake 0.15s ease-in-out 3;
+}
+
+/* RESPONSIVE DESIGN: Makes the grid fit on phones */
+@media (max-width: 620px) {
+    #container {
+        width: 90vw;
+        height: 90vw;
+        border-width: 10px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
 }

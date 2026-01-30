@@ -1,13 +1,10 @@
 $(document).ready(function() {
     const $container = $('#container');
-    const $colorPicker = $('#colorPicker'); 
+    const $colorPicker = $('#colorPicker');
     let isDrawing = false;
 
-    // The Grid Creator
     const createGrid = (size = 16) => {
         $container.empty();
-        isDrawing = false; // Reset drawing state
-        
         $container.css({
             'grid-template-columns': `repeat(${size}, 1fr)`,
             'grid-template-rows': `repeat(${size}, 1fr)`
@@ -22,69 +19,61 @@ $(document).ready(function() {
         $container.append(fragment);
     };
 
-    // Painting Function
     const paint = (element) => {
-        const selectedColor = $colorPicker.val();
+        if (!element || !$(element).hasClass('grid')) return;
         $(element).css({
-            'background-color': selectedColor,
-            'transition': 'none' // Ensures drawing is always instant
+            'background-color': $colorPicker.val(),
+            'transition': 'none'
         });
     };
 
-    // --- Interaction Listeners ---
+    // --- MOUSE EVENTS ---
+    $container.on('mousedown', (e) => { e.preventDefault(); isDrawing = true; });
+    $(window).on('mouseup', () => isDrawing = false);
+    $container.on('mouseover', '.grid', function() { if (isDrawing) paint(this); });
+    $container.on('mousedown', '.grid', function() { paint(this); });
 
-    $container.on('mousedown', function(e) {
-        e.preventDefault(); 
+    // --- TOUCH EVENTS (Mobile Support) ---
+    $container.on('touchstart', '.grid', function(e) {
+        // Prevent scrolling while drawing
+        if (e.cancelable) e.preventDefault();
         isDrawing = true;
-    });
-
-    $container.on('mouseover', '.grid', function() {
-        if (isDrawing) paint(this);
-    });
-
-    $container.on('mousedown', '.grid', function() {
         paint(this);
     });
 
-    $(window).on('mouseup', function() {
-        isDrawing = false;
+    $container.on('touchmove', function(e) {
+        if (!isDrawing) return;
+        // Prevent scrolling while moving finger
+        if (e.cancelable) e.preventDefault();
+
+        // Get the location of the touch
+        const touch = e.touches[0];
+        // Find the element currently under that specific point
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        paint(target);
     });
 
-    // --- Button Controls ---
+    $(window).on('touchend', () => isDrawing = false);
 
-    // Clear and Shake
+    // --- BUTTON CONTROLS ---
     $('#clear').on('click', function() {
         $container.addClass('shake-it');
-
         $('.grid').css({
             'transition': 'background-color 0.8s ease-in-out',
             'background-color': 'dimgray'
         });
-
         setTimeout(() => {
             $container.removeClass('shake-it');
-            $('.grid').css('transition', ''); 
+            $('.grid').css('transition', '');
         }, 800);
     });
 
-    // Custom Grid Size
     $('#custom').on('click', function() {
-        let size = prompt("How many squares per side? (1-100)");
+        let size = prompt("Grid size (1-100):", "16");
         size = parseInt(size);
-
-        if (!isNaN(size) && size > 0 && size <= 100) {
-            createGrid(size);
-        } else if (size > 100) {
-            alert("Maximum size is 100 to prevent browser crashes!");
-        }
+        if (size > 0 && size <= 100) createGrid(size);
     });
 
-    // Hover effects for buttons
-    $('input[type="button"]').hover(
-        function() { $(this).addClass('active'); },
-        function() { $(this).removeClass('active'); }
-    );
-
-    // Initial Start
     createGrid(16);
 });
